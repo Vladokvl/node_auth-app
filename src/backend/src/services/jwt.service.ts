@@ -1,14 +1,14 @@
-import jwt from "jsonwebtoken";
-import "dotenv/config";
-import { PublicUser } from "./user.service.js";
+import jwt from 'jsonwebtoken';
+import 'dotenv/config';
+import { PublicUser } from './user.service.js';
 
 function sign(user: PublicUser) {
   const secret = process.env.JWT_KEY;
   if (!secret) {
-    throw new Error("JWT_KEY is not defined in environment variables!");
+    throw new Error('JWT_KEY is not defined in environment variables!');
   }
   const token = jwt.sign(user, secret, {
-    expiresIn: '20m'
+    expiresIn: '20m',
   });
 
   return token;
@@ -17,7 +17,7 @@ function sign(user: PublicUser) {
 function verify(token: string) {
   const secret = process.env.JWT_KEY;
   if (!secret) {
-    throw new Error("JWT_KEY is not defined in environment variables!");
+    throw new Error('JWT_KEY is not defined in environment variables!');
   }
   try {
     return jwt.verify(token, secret);
@@ -30,10 +30,10 @@ function verify(token: string) {
 function signRefresh(user: PublicUser) {
   const secret = process.env.JWT_REFRESH_KEY;
   if (!secret) {
-    throw new Error("JWT_REFRESH_KEY is not defined in environment variables!");
+    throw new Error('JWT_REFRESH_KEY is not defined in environment variables!');
   }
   const token = jwt.sign(user, secret, {
-    expiresIn: '30d'
+    expiresIn: '30d',
   });
 
   return token;
@@ -42,7 +42,7 @@ function signRefresh(user: PublicUser) {
 function verifyRefresh(token: string) {
   const secret = process.env.JWT_REFRESH_KEY;
   if (!secret) {
-    throw new Error("JWT_REFRESH_KEY is not defined in environment variables!");
+    throw new Error('JWT_REFRESH_KEY is not defined in environment variables!');
   }
   try {
     return jwt.verify(token, secret);
@@ -52,10 +52,9 @@ function verifyRefresh(token: string) {
   }
 }
 
-
 export const jwtService = {
   sign,
   verify,
   signRefresh,
-  verifyRefresh
+  verifyRefresh,
 };

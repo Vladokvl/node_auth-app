@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response, NextFunction } from 'express';
 
 export const errorMiddleware = (
   error: Error,
@@ -6,5 +6,5 @@ export const errorMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  res.status(500).json({ message: "Server error" });
+  res.status(500).json({ message: 'Server error' });
 };

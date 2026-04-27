@@ -20,7 +20,7 @@ export function ActivationPage() {
     authApi.activate(token)
       .then(() => {
         setStatus("success");
-        setTimeout(() => navigate("/login"), 3000);
+        setTimeout(() => navigate("/profile"), 3000);
       })
       .catch((err) => {
         setStatus("error");
@@ -39,8 +39,8 @@ export function ActivationPage() {
       <div className="min-h-screen bg-zinc-900 flex items-center justify-center">
         <div className="bg-zinc-800 border border-zinc-700 p-8 rounded-xl shadow-xl w-full max-w-md text-center flex flex-col gap-4">
           <h1 className="text-2xl font-bold text-green-400">Account activated!</h1>
-          <p className="text-zinc-300">Redirecting to login...</p>
-          <Link to="/login" className="text-purple-400 hover:underline text-sm">Go to Login</Link>
+          <p className="text-zinc-300">Redirecting to profile...</p>
+          <Link to="/profile" className="text-purple-400 hover:underline text-sm">Go to Profile</Link>
         </div>
       </div>
     );

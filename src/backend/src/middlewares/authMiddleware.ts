@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from "express";
-import { jwtService } from "../services/jwt.service.js";
-import { PublicUser } from "../services/user.service.js";
+import { Request, Response, NextFunction } from 'express';
+import { jwtService } from '../services/jwt.service.js';
+import { PublicUser } from '../services/user.service.js';
 
 declare global {
   namespace Express {
@@ -15,8 +15,8 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  const authorization = req.headers["authorization"] || "";
-  const [, token] = authorization.split(" ");
+  const authorization = req.headers['authorization'] || '';
+  const [, token] = authorization.split(' ');
 
   if (!authorization || !token) {
     res.sendStatus(401);

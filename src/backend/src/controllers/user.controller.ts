@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
-import { userService } from "../services/user.service.js";
-import { prisma } from "../lib/db.js";
-import bcrypt from "bcrypt";
-import { sendEmail } from "../services/email.service.js";
+import { Request, Response } from 'express';
+import { userService } from '../services/user.service.js';
+import { prisma } from '../lib/db.js';
+import bcrypt from 'bcrypt';
+import { sendEmail } from '../services/email.service.js';
 async function getUsers(req: Request, res: Response) {
   const users = await userService.getPublicUsers();
 
@@ -18,7 +18,7 @@ async function updateName(req: Request, res: Response) {
     data: { name: newName },
   });
 
-  res.json({ message: "Name updated" });
+  res.json({ message: 'Name updated' });
 }
 
 async function updateEmail(req: Request, res: Response) {
@@ -33,19 +33,19 @@ async function updateEmail(req: Request, res: Response) {
 
   const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
   if (!isPasswordValid) {
-    return res.status(401).json({ error: "Wrong email or password" });
+    return res.status(401).json({ error: 'Wrong email or password' });
   }
 
   const emailExists = await prisma.user.findUnique({
     where: { email: newEmail },
   });
   if (emailExists) {
-    return res.status(400).json({ error: "Email already in use" });
+    return res.status(400).json({ error: 'Email already in use' });
   }
   sendEmail(user.email, {
-    subject: "Your email was changed",
+    subject: 'Your email was changed',
     text: `Your Email was changed from ${user.email} to ${newEmail}`,
-    html: "",
+    html: '',
   });
 
   await prisma.user.update({
@@ -53,7 +53,7 @@ async function updateEmail(req: Request, res: Response) {
     data: { email: newEmail },
   });
 
-  res.json({ message: "Email was changed" });
+  res.json({ message: 'Email was changed' });
 }
 async function updatePassword(req: Request, res: Response) {
   const { oldPassword, newPassword } = req.body;
@@ -66,7 +66,7 @@ async function updatePassword(req: Request, res: Response) {
 
   if (!isPasswordValid) {
     res.status(401);
-    res.json("Old password are incorrect");
+    res.json('Old password are incorrect');
     return;
   }
 
@@ -78,7 +78,7 @@ async function updatePassword(req: Request, res: Response) {
     data: { passwordHash: newPasswordHash },
   });
 
-  res.json({message: "password changed"});
+  res.json({ message: 'password changed' });
 }
 
 export const userController = {

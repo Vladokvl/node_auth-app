@@ -1,21 +1,21 @@
-import { client } from "./client.ts";
+import { client } from './client.ts';
 
 export const authApi = {
   register: (data: { email: string; password: string; name?: string }) =>
-    client.post("register", data),
+    client.post('/register', data),
 
   login: (data: { email: string; password: string }) =>
-    client.post("/login", data),
+    client.post('/login', data),
 
-  logout: () => client.post("logout"),
+  logout: () => client.post('/logout'),
 
-  refresh: () => client.get("/refresh"),
+  refresh: () => client.get('/refresh'),
 
   activate: (token: string) => client.get(`/activation?token=${token}`),
 
   requestPasswordReset: (email: string) =>
-    client.post("/password-reset", { email }),
+    client.post('/password-reset', { email }),
 
   confirmPasswordReset: (token: string, newPassword: string) =>
-    client.post("/password-reset/confirm", { token, newPassword }),
+    client.post('/password-reset/confirm', { token, newPassword }),
 };

@@ -1,5 +1,5 @@
-import { Prisma, User } from "../generated/prisma/client.js";
-import { prisma } from "../lib/db.js";
+import { Prisma, User } from '../generated/prisma/client.js';
+import { prisma } from '../lib/db.js';
 
 const publicUserSelect = {
   id: true,
@@ -32,6 +32,6 @@ function normalize(user: User): PublicUser {
 }
 
 export const userService = {
-    getPublicUsers,
-    normalize
-}
+  getPublicUsers,
+  normalize,
+};

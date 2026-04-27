@@ -1,9 +1,9 @@
-import nodemailer from "nodemailer";
-import "dotenv/config";
+import nodemailer from 'nodemailer';
+import 'dotenv/config';
 
 // Create a transporter using SMTP
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: 'gmail',
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -20,20 +20,20 @@ export async function sendActivationEmail(email: string, token: string) {
     const info = await transporter.sendMail({
       from: '"Zhovtany Vladyslav fullstack App" <>', // sender address
       to: email, // list of recipients
-      subject: "Acount activation", // subject line
-      text: "Press this link to activate:", // plain text body
+      subject: 'Acount activation', // subject line
+      text: 'Press this link to activate:', // plain text body
       html: html, // HTML body
     });
 
-    console.log("Message sent: %s", info.messageId);
+    console.log('Message sent: %s', info.messageId);
   } catch (err) {
-    console.error("Error while sending mail:", err);
+    console.error('Error while sending mail:', err);
   }
 }
 
 export async function sendEmail(
   to: string,
-  content = { subject: "Email was changed", text: "", html: "" },
+  content = { subject: 'Email was changed', text: '', html: '' },
 ) {
   try {
     const info = await transporter.sendMail({
@@ -44,9 +44,9 @@ export async function sendEmail(
       html: content.html, // HTML body
     });
 
-    console.log("Message sent: %s", info.messageId);
+    console.log('Message sent: %s', info.messageId);
   } catch (err) {
-    console.error("Error while sending mail:", err);
+    console.error('Error while sending mail:', err);
   }
 }
 
@@ -60,11 +60,11 @@ export async function sendResetPasswordEmail(email: string, token: string) {
     await transporter.sendMail({
       from: '"Zhovtany Vladyslav fullstack App" <>',
       to: email,
-      subject: "Password reset",
-      text: "Press this link to reset your password:",
+      subject: 'Password reset',
+      text: 'Press this link to reset your password:',
       html,
     });
   } catch (err) {
-    console.error("Error while sending mail:", err);
+    console.error('Error while sending mail:', err);
   }
 }

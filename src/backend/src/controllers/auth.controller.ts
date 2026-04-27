@@ -1,19 +1,19 @@
-import type { Request, Response } from "express";
-import { prisma } from "../lib/db.js";
+import type { Request, Response } from 'express';
+import { prisma } from '../lib/db.js';
 import {
   sendActivationEmail,
   sendResetPasswordEmail,
-} from "../services/email.service.js";
-import crypto from "crypto";
-import bcrypt from "bcrypt";
-import { jwtService } from "../services/jwt.service.js";
-import { PublicUser, userService } from "../services/user.service.js";
+} from '../services/email.service.js';
+import crypto from 'crypto';
+import bcrypt from 'bcrypt';
+import { jwtService } from '../services/jwt.service.js';
+import { PublicUser, userService } from '../services/user.service.js';
 
 const register = async (req: Request, res: Response) => {
   try {
     const { email, password, name } = req.body;
     const expiringTime = new Date(Date.now() + 30 * 60 * 1000);
-    const token = crypto.randomBytes(32).toString("hex");
+    const token = crypto.randomBytes(32).toString('hex');
     const userExists = await prisma.user.findUnique({
       where: { email: email },
     });
@@ -21,7 +21,7 @@ const register = async (req: Request, res: Response) => {
     if (userExists) {
       return res
         .status(400)
-        .json({ error: "User with this name already exists" });
+        .json({ error: 'User with this email already exists' });
     }
 
     const saltRounds = 10;
@@ -39,42 +39,45 @@ const register = async (req: Request, res: Response) => {
 
     sendActivationEmail(email, token);
     res.json({
-      message: "Check your email for verification",
+      message: 'Check your email for verification',
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "server error" });
+    res.status(500).json({ error: 'server error' });
   }
 };
 
 const activate = async (req: Request, res: Response) => {
   const tokenFromUser = req.query.token;
-  if (typeof tokenFromUser === "string") {
-    const user = await prisma.user.findFirst({
-      where: {
-        activationToken: tokenFromUser, // Пошук за токеном
-        activationTokenExpiring: { gt: new Date() }, // І перевірка часу одним махом
-      },
-    });
 
-    if (user?.isActivated === true) {
-      return res.status(400).json({ error: "user already activated" });
-    }
-    if (!user) {
-      return res.status(404).json({ error: "Invalid token or timed out" });
-    }
-
-    const activatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        isActivated: true,
-        activationToken: null,
-        activationTokenExpiring: null,
-      },
-    });
-
-    res.json({ message: "Successful activation" });
+  if (typeof tokenFromUser !== 'string') {
+    return res.status(400).json({ error: 'Token is required' });
   }
+
+  const user = await prisma.user.findFirst({
+    where: {
+      activationToken: tokenFromUser,
+      activationTokenExpiring: { gt: new Date() },
+    },
+  });
+
+  if (user?.isActivated === true) {
+    return res.status(400).json({ error: 'user already activated' });
+  }
+  if (!user) {
+    return res.status(404).json({ error: 'Invalid token or timed out' });
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      isActivated: true,
+      activationToken: null,
+      activationTokenExpiring: null,
+    },
+  });
+
+  res.json({ message: 'Successful activation' });
 };
 
 const login = async (req: Request, res: Response) => {
@@ -83,16 +86,16 @@ const login = async (req: Request, res: Response) => {
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (!user) {
-    return res.status(401).json({ error: "Wrong email or password" });
+    return res.status(401).json({ error: 'Wrong email or password' });
   }
   if (!user.isActivated) {
-    return res.status(401).json({ error: "Account not verified" });
+    return res.status(401).json({ error: 'Account not verified' });
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
   if (!isPasswordValid) {
-    return res.status(401).json({ error: "Wrong email or password" });
+    return res.status(401).json({ error: 'Wrong email or password' });
   }
 
   const normalizedUser = userService.normalize(user);
@@ -104,21 +107,21 @@ const refresh = async (req: Request, res: Response) => {
   const { refreshToken } = req.cookies;
 
   if (!refreshToken) {
-    return res.status(401).json({ error: "No refresh token" });
+    return res.status(401).json({ error: 'No refresh token' });
   }
 
   const tokenInDb = await prisma.refreshTokens.findUnique({
     where: { token: refreshToken },
   });
   if (!tokenInDb) {
-    return res.status(401).json({ error: "invalid refresh token" });
+    return res.status(401).json({ error: 'invalid refresh token' });
   }
 
   const userData = jwtService.verifyRefresh(refreshToken);
 
-  if (!userData || typeof userData === "string") {
+  if (!userData || typeof userData === 'string') {
     await prisma.refreshTokens.delete({ where: { token: refreshToken } });
-    return res.status(401).json({ error: "Invalid refresh token" });
+    return res.status(401).json({ error: 'Invalid refresh token' });
   }
 
   await prisma.refreshTokens.delete({ where: { token: refreshToken } });
@@ -142,13 +145,13 @@ const generateTokens = async (res: Response, user: PublicUser) => {
     },
   });
 
-  res.cookie("refreshToken", refreshToken, {
+  res.cookie('refreshToken', refreshToken, {
     maxAge: 30 * 24 * 60 * 60 * 1000,
     httpOnly: true,
   });
 
   res.json({
-    message: "Successfull login!",
+    message: 'Successfull login!',
     user: user,
     token: accesToken,
   });
@@ -163,7 +166,7 @@ const logout = async (req: Request, res: Response) => {
     });
   }
 
-  res.clearCookie("refreshToken");
+  res.clearCookie('refreshToken');
   res.sendStatus(204);
 };
 
@@ -174,11 +177,11 @@ const requestPasswordReset = async (req: Request, res: Response) => {
 
   if (!user) {
     return res.json({
-      message: "If this email exists, you will receive a reset link",
+      message: 'If this email exists, you will receive a reset link',
     });
   }
 
-  const token = crypto.randomBytes(32).toString("hex");
+  const token = crypto.randomBytes(32).toString('hex');
   const expiring = new Date(Date.now() + 30 * 60 * 1000);
 
   await prisma.user.update({
@@ -188,7 +191,7 @@ const requestPasswordReset = async (req: Request, res: Response) => {
 
   sendResetPasswordEmail(email, token);
 
-  res.json({ message: "If this email exists, you will receive a reset link" });
+  res.json({ message: 'If this email exists, you will receive a reset link' });
 };
 
 const confirmPasswordReset = async (req: Request, res: Response) => {
@@ -202,7 +205,7 @@ const confirmPasswordReset = async (req: Request, res: Response) => {
   });
 
   if (!user) {
-    return res.status(404).json({ error: "Invalid token or timed out" });
+    return res.status(404).json({ error: 'Invalid token or timed out' });
   }
 
   const passwordHash = await bcrypt.hash(newPassword, 10);
@@ -216,7 +219,7 @@ const confirmPasswordReset = async (req: Request, res: Response) => {
     },
   });
 
-  res.json({ message: "Password successfully reset" });
+  res.json({ message: 'Password successfully reset' });
 };
 
 export const authController = {
@@ -226,5 +229,5 @@ export const authController = {
   refresh,
   logout,
   requestPasswordReset,
-  confirmPasswordReset
+  confirmPasswordReset,
 };
